@@ -294,8 +294,11 @@ export const EuiFlyout = forwardRef(
     const [fixedHeaders, setFixedHeaders] = useState<HTMLDivElement[]>([]);
 
     useEffect(() => {
+      let fixedHeaderEls: NodeListOf<HTMLDivElement>;
+      let inertEls: Element[] = [];
+
       if (includeFixedHeadersInFocusTrap) {
-        const fixedHeaderEls = document.querySelectorAll<HTMLDivElement>(
+        fixedHeaderEls = document.querySelectorAll<HTMLDivElement>(
           '.euiHeader[data-fixed-header]'
         );
         setFixedHeaders(Array.from(fixedHeaderEls));
@@ -307,10 +310,34 @@ export const EuiFlyout = forwardRef(
             resizeRef?.focus();
           }
         });
+
+        fixedHeaderEls.forEach((header) => {
+          const ignoreWithinShard = header.querySelectorAll(
+            '[data-focus-trap-shard-ignore]'
+          );
+          if (ignoreWithinShard.length) {
+            Array.from(ignoreWithinShard).forEach((el) => {
+              el.setAttribute('inert', '');
+              inertEls.push(el);
+            });
+          }
+        });
+
+        console.log(`making elements inert (${inertEls.length})`, inertEls);
       } else {
         // Clear existing headers if necessary, e.g. switching to `false`
         setFixedHeaders((headers) => (headers.length ? [] : headers));
       }
+
+      return () => {
+        if (inertEls.length) {
+          console.log(`cleaning up inert elements (${inertEls.length})`);
+          inertEls.forEach((el) => {
+            el.removeAttribute('inert');
+          });
+          inertEls = [];
+        }
+      };
     }, [includeFixedHeadersInFocusTrap, resizeRef]);
 
     const focusTrapProps: EuiFlyoutProps['focusTrapProps'] = useMemo(

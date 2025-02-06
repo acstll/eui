@@ -222,6 +222,7 @@ const _EuiCollapsibleNavBeta: FunctionComponent<EuiCollapsibleNavBetaProps> = ({
       pushMinBreakpoint="xs"
       onClose={isPush ? onClose : closeOverlayFlyout}
       hideCloseButton={true}
+      includeFixedHeadersInFocusTrap={false}
     >
       {children}
     </EuiFlyout>
@@ -244,7 +245,7 @@ const _EuiCollapsibleNavBeta: FunctionComponent<EuiCollapsibleNavBetaProps> = ({
         onClick={isPush ? toggleCollapsed : toggleOverlayFlyout}
         aria-controls={flyoutID}
       />
-      {!hideFlyout && flyout}
+      <div data-focus-trap-shard-ignore="">{!hideFlyout && flyout}</div>
     </EuiCollapsibleNavContext.Provider>
   );
 };
