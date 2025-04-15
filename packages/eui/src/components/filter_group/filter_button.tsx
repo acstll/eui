@@ -34,11 +34,12 @@ export type EuiFilterButtonProps = {
   numFilters?: number;
   /**
    * Pass the number of selected filters and it will
-   * add a bright notification badge showing the number
+   * add a bright notification badge showing the number.
+   * Limit the usage of type `string` to a single-character suffix, e.g. `42%`
    */
-  numActiveFilters?: number;
+  numActiveFilters?: number | string;
   /**
-   * Applies a visual state to the button useful when using with a popover.
+   * Applies a visual state to the button useful when using with a popover
    */
   isSelected?: boolean;
   /**
@@ -76,7 +77,9 @@ export const EuiFilterButton: FunctionComponent<EuiFilterButtonProps> = ({
 }) => {
   const numFiltersDefined = numFilters != null; // != instead of !== to allow for null and undefined
   const numActiveFiltersDefined =
-    numActiveFilters != null && numActiveFilters > 0;
+    typeof numActiveFilters === 'number'
+      ? numActiveFilters > 0
+      : numActiveFilters != null;
 
   const styles = useEuiMemoizedStyles(euiFilterButtonStyles);
   const cssStyles = [
