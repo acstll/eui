@@ -34,7 +34,7 @@ const SAFETY_OFFSET = 20;
  */
 export const useEuiFlyoutResizable = ({
   enabled,
-  minWidth = SAFETY_OFFSET,
+  minWidth = 0,
   maxWidth,
   onResize,
   side,
