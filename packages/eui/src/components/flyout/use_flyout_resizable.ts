@@ -27,7 +27,7 @@ type UseEuiFlyoutResizable = Pick<
   size: string | number;
 };
 
-const SAFETY_OFFSET = 20
+const SAFETY_OFFSET = 20;
 
 /**
  * @internal
@@ -40,20 +40,23 @@ export const useEuiFlyoutResizable = ({
   side,
   size: _size,
 }: UseEuiFlyoutResizable) => {
+  const [flyoutWidth, setFlyoutWidth] = useState(0);
+  const [callOnResize, setCallOnResize] = useState(false);
+  // TODO this could be passed directly to `getFlyoutMinMaxWidth` instead of using a ref?
+  // TODO this could account for the right offset for child flyouts?
+  const constraintWidth = useRef<number>(window.innerWidth);
+
   const getFlyoutMinMaxWidth = useCallback(
     (width: number) => {
       const safeMinWidth = Math.max(minWidth, SAFETY_OFFSET);
       return Math.min(
         Math.max(width, safeMinWidth),
         maxWidth || Infinity,
-        window.innerWidth - SAFETY_OFFSET // Leave some offset
+        constraintWidth.current - SAFETY_OFFSET // Leave some offset
       );
     },
-    [minWidth, maxWidth]
+    [minWidth, maxWidth, constraintWidth]
   );
-
-  const [flyoutWidth, setFlyoutWidth] = useState(0);
-  const [callOnResize, setCallOnResize] = useState(false);
 
   // Must use state for the flyout ref in order for the useEffect to be correctly called after render
   const [flyoutRef, setFlyoutRef] = useState<HTMLElement | null>(null);
@@ -171,6 +174,19 @@ export const useEuiFlyoutResizable = ({
       onResize?.(flyoutWidth);
     }
   }, [onResize, callOnResize, flyoutWidth, enabled]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const handler = () => {
+      constraintWidth.current = window.innerWidth;
+      setFlyoutWidth(getFlyoutMinMaxWidth(flyoutWidth));
+    };
+    window.addEventListener('resize', handler, {
+      signal: controller.signal,
+    });
+
+    return () => controller.abort();
+  });
 
   const size = useMemo(() => flyoutWidth || _size, [flyoutWidth, _size]);
 
