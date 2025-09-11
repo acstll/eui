@@ -27,12 +27,14 @@ type UseEuiFlyoutResizable = Pick<
   size: string | number;
 };
 
+const SAFETY_OFFSET = 20
+
 /**
  * @internal
  */
 export const useEuiFlyoutResizable = ({
   enabled,
-  minWidth = 0,
+  minWidth = SAFETY_OFFSET,
   maxWidth,
   onResize,
   side,
@@ -40,10 +42,11 @@ export const useEuiFlyoutResizable = ({
 }: UseEuiFlyoutResizable) => {
   const getFlyoutMinMaxWidth = useCallback(
     (width: number) => {
+      const safeMinWidth = Math.max(minWidth, SAFETY_OFFSET);
       return Math.min(
-        Math.max(width, minWidth),
+        Math.max(width, safeMinWidth),
         maxWidth || Infinity,
-        window.innerWidth - 20 // Leave some offset
+        window.innerWidth - SAFETY_OFFSET // Leave some offset
       );
     },
     [minWidth, maxWidth]

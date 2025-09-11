@@ -34,6 +34,7 @@ type EuiFlyoutChildActualProps = Pick<
   | 'includeSelectorInFocusTrap'
   | 'maskProps'
   | 'maxWidth'
+  | 'minWidth'
   | 'onClose'
   | 'ownFocus'
   | 'paddingSize'
@@ -124,6 +125,7 @@ const meta: Meta<FlyoutChildStoryArgs> = {
     paddingSize: { table: { disable: true } },
     side: { table: { disable: true } },
     style: { table: { disable: true } },
+    minWidth: { table: { disable: true } },
   },
   args: {
     mainSize: 'fill',
